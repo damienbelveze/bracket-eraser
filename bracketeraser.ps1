@@ -1,7 +1,7 @@
 ﻿##[Ps1 To Exe]
 ##
-##Kd3HDZOFADWE8uO1
-##Nc3NCtDXTlGDjpra7jFL4UnrTn4udMCnnbO0z5Wz79bpqSTKTIhaQFd49g==
+##Kd3HDZOFADWE8uK1
+##Nc3NCtDXThU=
 ##Kd3HFJGZHWLWoLaVvnQnhQ==
 ##LM/RF4eFHHGZ7/K1
 ##K8rLFtDXTiW5
@@ -26,7 +26,7 @@
 ##LNzLEpGeC3fMu77Ro2k3hQ==
 ##L97HB5mLAnfMu77Ro2k3hQ==
 ##P8HPCZWEGmaZ7/K1
-##L8/UAdDXTlGDjpra7jFL4UnrTn4udMCnnbO0z5Wz79buqSTaQp8ATEZ2hSzuSk6lXJI=
+##L8/UAdDXTlGDjpra7jFL4UnrTn4udMCnnbO0z5Wz79buqSTaQp8ABFFllzr5Fne/S/MRXvABscMQRhg4YfcT59I=
 ##Kc/BRM3KXhU=
 ##
 ##
@@ -60,11 +60,7 @@ If(!(test-path $path\mypdf))
 
 # identification du fichier qui comporte les références bibliographiques
 
-$biblio = get-childitem $path -recurse | where {$_.extension -eq ".bib"} | % { $_.FullName }
-
-Write-host "votre fichier de citations est le suivant" -ForegroundColor Green
-
-Get-Variable biblio
+$biblio = @(Get-ChildItem -recurse | where {$_.extension -eq ".bib"} | Out-GridView -Title 'sélectionner un fichier de références' -PassThru)
 
 read-host "appuyer sur Enter pour continuer..."
 
@@ -94,9 +90,14 @@ $style = @(Get-ChildItem $path\csl | where {$_.extension -eq ".csl"} | Out-GridV
 
 pandoc mypdf\$filename.md --bibliography=$biblio --csl=$style --pdf-engine=xelatex --citeproc -f markdown+smart -o mypdf\$filename.pdf
 
+# impression de la commande pandoc dans un fichier distinct
+
+$command = {pandoc mypdf\$filename.md --bibliography=$biblio --csl=$style --pdf-engine=xelatex --citeproc -f markdown+smart -o mypdf\$filename.pdf}
+
+echo $command > mypdf\$filename.txt
+
 # suppression du fichier markdown dans mypdf correspondant à la note exportée en pdf
 
 Remove-Item mypdf\$filename.md
 
 Write-Host "le pdf de la note se trouve dans votre le dossier mypdf" -ForegroundColor blue
-
